@@ -1,10 +1,9 @@
 #include "biomenoise.h"
 
 #include "tables/btree18.h"
-#include "tables/btree192.h"
 #include "tables/btree19.h"
 #include "tables/btree20.h"
-#include "tables/btree21wd.h"
+#include "tables/btree21.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -1437,10 +1436,6 @@ int climateToBiome(int mc, const uint64_t np[6], uint64_t *dat)
         btree18_steps, &btree18_param[0][0], btree18_nodes, btree18_order,
         sizeof(btree18_nodes) / sizeof(uint64_t)
     };
-    static const BiomeTree btree192 = {
-        btree192_steps, &btree192_param[0][0], btree192_nodes, btree192_order,
-        sizeof(btree192_nodes) / sizeof(uint64_t)
-    };
     static const BiomeTree btree19 = {
         btree19_steps, &btree19_param[0][0], btree19_nodes, btree19_order,
         sizeof(btree19_nodes) / sizeof(uint64_t)
@@ -1449,22 +1444,20 @@ int climateToBiome(int mc, const uint64_t np[6], uint64_t *dat)
         btree20_steps, &btree20_param[0][0], btree20_nodes, btree20_order,
         sizeof(btree20_nodes) / sizeof(uint64_t)
     };
-    static const BiomeTree btree21wd = {
-        btree21wd_steps, &btree21wd_param[0][0], btree21wd_nodes, btree21wd_order,
-        sizeof(btree21wd_nodes) / sizeof(uint64_t)
+    static const BiomeTree btree21 = {
+        btree21_steps, &btree21_param[0][0], btree21_nodes, btree21_order,
+        sizeof(btree21_nodes) / sizeof(uint64_t)
     };
 
     const BiomeTree *bt;
     int idx;
 
-    if (mc >= MC_1_21_WD)
-        bt = &btree21wd;
-    else if (mc >= MC_1_20_6)
+    if (mc >= MC_1_21)
+        bt = &btree21;
+    else if (mc >= MC_1_20)
         bt = &btree20;
-    else if (mc >= MC_1_19_4)
+    else if (mc >= MC_1_19)
         bt = &btree19;
-    else if (mc >= MC_1_19_2)
-        bt = &btree192;
     else
         bt = &btree18;
 

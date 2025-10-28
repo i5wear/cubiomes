@@ -17,7 +17,7 @@ enum BiomeTempCategory
 enum LayerId
 {
     // new                  [[deprecated]]
-    L_CONTINENT_4096 = 0,   L_ISLAND_4096 = L_CONTINENT_4096,
+    L_CONTINENT_4096,       L_ISLAND_4096 = L_CONTINENT_4096,
     L_ZOOM_4096,                                                    // b1.8
     L_LAND_4096,                                                    // b1.8
     L_ZOOM_2048,

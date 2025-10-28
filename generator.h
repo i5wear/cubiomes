@@ -4,9 +4,9 @@
 #include "layers.h"
 #include "biomenoise.h"
 
-// generator flags
-enum
+enum GeneratorFlag
 {
+    DEFAULT                 = 0x0,
     LARGE_BIOMES            = 0x1,
     NO_BETA_OCEAN           = 0x2,
     FORCE_OCEAN_VARIANTS    = 0x4,

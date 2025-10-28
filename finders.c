@@ -1,5 +1,4 @@
 #include "finders.h"
-#include "biomes.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -80,7 +79,7 @@ int getStructureConfig(int structureType, int mc, StructureConfig *sconf)
     s_monument              = { 10387313, 32, 27, Monument,         0,0},
     s_mansion               = { 10387319, 80, 60, Mansion,          0,0},
     s_ruined_portal         = { 34222645, 40, 25, Ruined_Portal,    0,0},
-    s_ruined_portal_n       = { 34222645, 40, 25, Ruined_Portal,    DIM_NETHER,0},
+    s_ruined_portal_n       = { 34222645, 40, 25, Ruined_Portal_N,  DIM_NETHER,0},
     s_ruined_portal_n_117   = { 34222645, 25, 15, Ruined_Portal_N,  DIM_NETHER,0},
     s_ancient_city          = { 20083232, 24, 16, Ancient_City,     0,0},
     s_trail_ruins           = { 83469867, 34, 26, Trail_Ruins,      0,0},
@@ -134,10 +133,10 @@ int getStructureConfig(int structureType, int mc, StructureConfig *sconf)
         return mc >= MC_1_13;
     case Ruined_Portal:
         *sconf = s_ruined_portal;
-        return mc >= MC_1_16_1;
+        return mc >= MC_1_16;
     case Ruined_Portal_N:
         *sconf = mc <= MC_1_17 ? s_ruined_portal_n_117 : s_ruined_portal_n;
-        return mc >= MC_1_16_1;
+        return mc >= MC_1_16;
     case Monument:
         *sconf = s_monument;
         return mc >= MC_1_8;
@@ -152,7 +151,7 @@ int getStructureConfig(int structureType, int mc, StructureConfig *sconf)
         return mc >= MC_1_14;
     case Ancient_City:
         *sconf = s_ancient_city;
-        return mc >= MC_1_19_2;
+        return mc >= MC_1_19;
     case Treasure:
         *sconf = s_treasure;
         return mc >= MC_1_13;
@@ -164,7 +163,7 @@ int getStructureConfig(int structureType, int mc, StructureConfig *sconf)
         return mc >= MC_1_0;
     case Bastion:
         *sconf = s_bastion;
-        return mc >= MC_1_16_1;
+        return mc >= MC_1_16;
     case End_Gateway:
         if      (mc <= MC_1_15) *sconf = s_end_gateway_115;
         else if (mc <= MC_1_16) *sconf = s_end_gateway_116;
@@ -192,7 +191,7 @@ int getStructureConfig(int structureType, int mc, StructureConfig *sconf)
         return mc >= MC_1_20;
     case Trial_Chambers:
         *sconf = s_trial_chambers;
-        return mc >= MC_1_21_1;
+        return mc >= MC_1_21;
     default:
         memset(sconf, 0, sizeof(StructureConfig));
         return 0;
@@ -267,7 +266,7 @@ int getStructurePos(int structureType, int mc, uint64_t seed, int regX, int regZ
         if (mc >= MC_1_18) {
             *pos = getFeaturePos(sconf, seed, regX, regZ);
             return 1; // fortresses gen where bastions don't (biome dependent)
-        } else if (mc >= MC_1_16_1) {
+        } else if (mc >= MC_1_16) {
             getRegPos(pos, &seed, regX, regZ, sconf);
             return nextInt(&seed, 5) < 2;
         } else {
@@ -825,6 +824,7 @@ int isStrongholdBiome(int mc, int id)
         return mc <= MC_1_15 || mc >= MC_1_18;
     case mangrove_swamp:
     case deep_dark:
+    case cherry_grove:
         return 0;
     default:
         return 1;
@@ -877,7 +877,7 @@ int nextStronghold(StrongholdIter *sh, const Generator *g)
             validM |= (1ULL << i);
     }
 
-    if (sh->mc > MC_1_19_2)
+    if (sh->mc >= MC_1_19)
     {
         if (g)
         {
@@ -967,7 +967,7 @@ uint64_t calcFitness(const Generator *g, int x, int z)
     // apply dependence on distance from origin
     a = (int64_t)x*x;
     b = (int64_t)z*z;
-    if (g->mc <= MC_1_21_1)
+    if (g->mc <= MC_1_20)
     {
         double s = (double)(a + b) / (2500 * 2500);
         q = (uint64_t)(s*s * 1e8) + ds;
@@ -1195,7 +1195,7 @@ int isViableFeatureBiome(int mc, int structureType, int biomeID)
 
     case Igloo:
         if (mc <= MC_1_8) return 0;
-        return biomeID == snowy_tundra || biomeID == snowy_taiga || biomeID == snowy_slopes;
+        return biomeID == snowy_tundra || biomeID == snowy_taiga || biomeID == snowy_plains || biomeID == snowy_slopes;
 
     case Ocean_Ruin:
         if (mc <= MC_1_12) return 0;
@@ -1207,7 +1207,7 @@ int isViableFeatureBiome(int mc, int structureType, int biomeID)
 
     case Ruined_Portal:
     case Ruined_Portal_N:
-        return mc >= MC_1_16_1;
+        return mc >= MC_1_16;
 
     case Ancient_City:
         if (mc <= MC_1_18) return 0;
@@ -1282,7 +1282,7 @@ int isViableFeatureBiome(int mc, int structureType, int biomeID)
 
     case Mansion:
         if (mc <= MC_1_10) return 0;
-        return biomeID == dark_forest || biomeID == dark_forest_hills;
+        return biomeID == dark_forest || biomeID == dark_forest_hills || biomeID == pale_garden;
 
     case Fortress:
         return (biomeID == nether_wastes || biomeID == soul_sand_valley ||
@@ -1474,7 +1474,7 @@ int isViableStructurePos(int structureType, Generator *g, int x, int z, uint32_t
             getVariant(&sv, Bastion, g->mc, g->seed, x, z, -1);
             sampleX = (chunkX*32 + 2*sv.x + sv.sx-1) / 2 >> 2;
             sampleZ = (chunkZ*32 + 2*sv.z + sv.sz-1) / 2 >> 2;
-            if (g->mc >= MC_1_19_2)
+            if (g->mc >= MC_1_19)
                 sampleY = 33 >> 2; // nether biomes don't actually vary in Y
         }
         else
@@ -1658,7 +1658,7 @@ L_feature:
                 int cx = p.x >> 4, cz = p.z >> 4;
                 if (cx >= cx0 && cx <= cx1 && cz >= cz0 && cz <= cz1)
                 {
-                    if (g->mc >= MC_1_16_1)
+                    if (g->mc >= MC_1_16)
                         goto L_not_viable;
                     if (isViableStructurePos(Village, g, p.x, p.z, 0))
                         goto L_not_viable;
@@ -1678,7 +1678,7 @@ L_feature:
             sampleX = (chunkX * 32 + sampleX) / 2 >> 2;
             sampleZ = (chunkZ * 32 + sampleZ) / 2 >> 2;
         }
-        else if (g->mc >= MC_1_16_1)
+        else if (g->mc >= MC_1_16)
         {
             g->entry = &g->ls.layers[L_RIVER_MIX_4];
             sampleX = chunkX * 4 + 2;
@@ -2079,12 +2079,6 @@ int getVariant(StructureVariant *r, int structType, int mc, uint64_t seed,
     case Bastion:
         r->rotation = nextInt(&rng, 4);
         r->start = nextInt(&rng, 4);
-        if (mc == MC_1_16_1)
-        {   // swapped in 1.16.1 only
-            uint8_t tmp = r->start;
-            r->start = r->rotation;
-            r->rotation = tmp;
-        }
         switch (r->start)
         {
         case 0: sx = 46; sy = 24; sz = 46; break; // units/air_base
@@ -2221,7 +2215,7 @@ int getVariant(StructureVariant *r, int structType, int mc, uint64_t seed,
             r->start = 1 + nextInt(&rng, 10);
         }
         r->rotation = nextInt(&rng, 4);
-        r->mirror = nextFloat(&rng) < 0.5f;
+        r->mirror = nextFloat(&rng) >= 0.5f;
         return 1;
 
     case Monument:
@@ -5466,7 +5460,7 @@ static const int g_biome_para_range_20_diff[][13] = {
 {cherry_grove            , -4500, 2000,  IMIN,-1000,   300, IMAX, -7799,  500,  IMIN, IMAX,  2666, IMAX},
 {-1,0,0,0,0,0,0,0,0,0,0,0,0}};
 
-static const int g_biome_para_range_21wd_diff[][13] = {
+static const int g_biome_para_range_21_diff[][13] = {
 {pale_garden             , -1500, 2000,  3000, IMAX,   300, IMAX, -7799,  500,  IMIN, IMAX,  2666, IMAX},
 {-1,0,0,0,0,0,0,0,0,0,0,0,0}};
 
@@ -5508,12 +5502,12 @@ const int *getBiomeParaLimits(int mc, int id)
     if (mc <= MC_1_17)
         return NULL;
     int i;
-    if (mc > MC_1_21_3)
+    if (mc > MC_1_20)
     {
-        for (i = 0; g_biome_para_range_21wd_diff[i][0] != -1; i++)
+        for (i = 0; g_biome_para_range_21_diff[i][0] != -1; i++)
         {
-            if (g_biome_para_range_21wd_diff[i][0] == id)
-                return &g_biome_para_range_21wd_diff[i][1];
+            if (g_biome_para_range_21_diff[i][0] == id)
+                return &g_biome_para_range_21_diff[i][1];
         }
     }
     if (mc > MC_1_19)

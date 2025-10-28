@@ -1,4 +1,3 @@
-
 #include "noise.h"
 
 #include <math.h>

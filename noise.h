@@ -2,7 +2,6 @@
 #define NOISE_H_
 
 #include "rng.h"
-#include <math.h>
 
 STRUCT(PerlinNoise)
 {

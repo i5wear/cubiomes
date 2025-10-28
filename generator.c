@@ -1,5 +1,4 @@
 #include "generator.h"
-#include "layers.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,7 +118,7 @@ void applySeed(Generator *g, int dim, uint64_t seed)
             setBiomeSeed(&g->bn, seed, g->flags & LARGE_BIOMES);
         }
     }
-    else if (dim == DIM_NETHER && g->mc >= MC_1_16_1)
+    else if (dim == DIM_NETHER && g->mc >= MC_1_16)
     {
         setNetherSeed(&g->nn, seed);
     }

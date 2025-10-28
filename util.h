@@ -2,7 +2,7 @@
 #define UTIL_H_
 
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #ifdef __cplusplus
 extern "C"

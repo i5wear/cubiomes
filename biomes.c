@@ -12,13 +12,13 @@ int biomeExists(int mc, int id)
             return 1;
 
         if (id == pale_garden)
-            return mc >= MC_1_21_WD;
+            return mc >= MC_1_21;
 
         if (id == cherry_grove)
             return mc >= MC_1_20;
 
         if (id == deep_dark || id == mangrove_swamp)
-            return mc >= MC_1_19_2;
+            return mc >= MC_1_19;
 
         switch (id)
         {
@@ -170,7 +170,7 @@ int biomeExists(int mc, int id)
     case crimson_forest:
     case warped_forest:
     case basalt_deltas:
-        return mc >= MC_1_16_1;
+        return mc >= MC_1_16;
     case dripstone_caves:
     case lush_caves:
         return mc >= MC_1_17;
