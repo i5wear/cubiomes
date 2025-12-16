@@ -1,7 +1,6 @@
 #ifndef BIOMES_H_
 #define BIOMES_H_
 
-/* Minecraft versions */
 enum MCVersion
 {   // MC_1_X refers to the latest patch of the respective 1.X release.
     // NOTE: Development effort focuses on just the newest patch for each major
